@@ -3,6 +3,7 @@
 #include<unordered_map>
 #include<vector>
 #include<limits>
+#include"priorityqueue.cpp"
 
 #define costmax std::numeric_limits<int>::max()
 
@@ -93,51 +94,147 @@ void printpath(std::string lastnode)
     }
 }
 
+
+
+class edge{
+
+    public:
+
+    std::string parent;
+    std::string current;
+    int totalcost;
+
+    edge(std::string parent1, std::string current1, int totalcost1)
+    {
+        (this->parent) = parent1;
+        (this->current) = current1;
+        (this->totalcost) = -1*totalcost1;
+    }
+
+    edge()
+    {
+        (this->parent) = "";
+        (this->current) = "";
+        (this->totalcost) = 0;
+    }
+
+    bool operator<(edge edge1)
+    {
+        bool returnval;
+        if((this->totalcost)<(edge1.totalcost))
+        {
+            returnval = 1;
+        }else{
+            returnval = 0;
+        }
+
+        return returnval;
+    }
+
+    bool operator>(edge edge1)
+    {
+        bool returnval;
+        if((this->totalcost)>(edge1.totalcost))
+        {
+            returnval = 1;
+        }else{
+            returnval = 0;
+        }
+
+        return returnval;
+    }
+
+    void operator=(edge edge1)
+    {
+        (this->parent) = edge1.parent;
+        (this->current) = edge1.current;
+        (this->totalcost) = (edge1.totalcost);
+    }
+
+    void operator=(int num)
+    {
+        if(num==0)
+        {
+            (this->parent) = "";
+            (this->current) = "";
+            (this->totalcost) = 0;
+        }
+    }
+
+    bool operator!=(int num)
+    {
+        bool returnval;
+        if(num==0)
+        {
+            if(((this->parent) == "")&&((this->current) == "")&&((this->totalcost) == 0))
+            {
+                returnval = 0;
+            }else{
+                returnval = 1;
+            }
+        }
+
+        return returnval;
+    }
+
+
+};
+
 int main()
 {
-          std::string cheapestnode;
-          std::unordered_map<std::string, int>::iterator costit = cost.begin();
-          //cheapestnode=costit->first;
-          std::vector<std::string> checked;
-          int count=0;
+    //Implementing the graph with an unordered_map first:
 
-          for(int i=0; i<cost.size(); i++) // for each node
-          {
-            costit= cost.begin();//iterate all over again to find the next cheapest node
-            //std::cout<<"outer "<< i<<"("<<costit->first<<")"<<std::endl;
-            count=0;
-            for(int j=0; j<cost.size(); j++) //finding the cheapest node everytime
-            {
-                //std::cout<<"    inner "<<j<<"("<<inchecked(checked, costit->first)<<")"<<std::endl;
-                if(!(inchecked(checked, costit->first)))
-                {
-                    if(count==0)
-                    {
-                        cheapestnode=costit->first;
-                        count=1;
-                    }
-                }
-                if((costit->second)<cost[cheapestnode] && !(inchecked(checked, costit -> first))) 
-                {
-                    cheapestnode=(costit->first);
-                }
-                costit++;
-            }
-            //std::cout<<" cheapest node for this iteration: "<<cheapestnode<<std::endl;
-            neighbouriterate(cheapestnode);
-            checked.push_back(cheapestnode); //once cheapest unchecked node is found, we iterate through its neighbours and add it to the checked list
-            // for(int k=0; k<checked.size(); k++)
-            // {
-            //     std::cout<<" checked elements: "<<checked[i]<<", ";
-            // }
-            //std::cout<<inchecked(checked, cheapestnode);
-            //std::cout<<std::endl;
-            if(i==(cost.size() -1))
-            {
-                std::cout<<"The cheapest path to Piano is: "<<cost["piano"]<< " dollars"<<std::endl;
-                break;
-            }
-         }
-         printpath("piano");
+    //Declaring a queue of edges
+    //I have not implemented a min heap yet, so will use a max heap with negative totalcosts
+    //Have overloaded the equality operator so that the pulled edge always has the positive totalcost
+    maxheap<edge> pqueue;
+
+    //edge we are working on
+    edge pullededge("-", "book", 0);
+    edge* tempedge;
+
+    int count=0;
+
+    for(count=0; count<7; count++)
+    {
+        //adding this edge to the totalcost table and updating its parent
+        cost[pullededge.current] = pullededge.totalcost;
+        parent[pullededge.current] = pullededge.parent;
+
+        if(count == 6)
+        {
+            break;
+        }
+
+        std::unordered_map<std::string, int>::iterator it;
+        it = (graph[pullededge.current]).begin();
+
+        //for all neighbours of pullededge.current
+        //std::cout<<"checking neighbours of "<<pullededge.current<<std::endl;
+
+        for(int i=0; i<(graph[pullededge.current]).size(); i++)
+        {
+            //std::cout<<"    pushing "<<pullededge.current<<"->"<<(it->first)<<"  "<<(pullededge.totalcost + it->second)<<std::endl;
+            //creating an edge to represent this neighbour's connection
+            //setting the total cost for this neighbour to pullededge.totalcost + weight of this edge
+            tempedge = new edge(pullededge.current, it->first, (pullededge.totalcost + it->second));
+            pqueue.insert(*tempedge);
+            it++;
+        }
+
+        //pqueue.printH();
+        //std::cout<<std::endl;
+
+        //at the end of the loop, we pull another edge from the priority queue
+        pullededge = pqueue.pull();
+        pullededge.totalcost = (-1)*(pullededge.totalcost);
+        //std::cout<<"pulled: "<<pullededge.parent<<" "<<pullededge.current<<" "<<pullededge.totalcost<<std::endl;
+        //pqueue.printH();
+        //std::cout<<std::endl;
+    }
+
+    std::cout<<"the cheapest path to the piano is: "<<cost["piano"]<<std::endl;
+    std::cout<<"path taken: ";
+    printpath("piano");
 
 }

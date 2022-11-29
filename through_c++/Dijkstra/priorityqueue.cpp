@@ -29,7 +29,7 @@ class maxheap{
     // a max heap first
 
     private:
-    T H[100] = {0};
+    T H[100];
     int last = -1;
     int current;
     int parent;
@@ -39,8 +39,12 @@ class maxheap{
     int lr;
     T highestpriority;
 
-    public: 
+    public:
 
+    maxheap()
+    {
+
+    }
     //inserts an element into the heap and bubbles it up until the heap property is satisfied
     void insert(T v)
     {
@@ -69,7 +73,6 @@ class maxheap{
                 break;
             }
         }
-
     }
 
     //returns the highest priority element from the heap, and heapifies the root to maintain 
@@ -87,16 +90,17 @@ class maxheap{
         current = 0;
         lchild = current*2 + 1;
         rchild = current*2 + 2;
-        for(i=0; (H[lchild] != 0)&&((H[current] < H[lchild])||(H[current] < H[rchild])); i++)
+        for(i=0; (H[lchild] != 0)&&((H[current] < H[lchild])||((H[rchild]!=0)&&(H[current] < H[rchild]))); i++)
         {
-            lchild = current*2 + 1;
-            rchild = current*2 + 2;
             lr = max(H[lchild], H[rchild]);
             temp = H[lchild + lr];
             H[lchild + lr] = H[current];
             H[current] = temp;
 
             current = lchild + lr;
+
+            lchild = current*2 + 1;
+            rchild = current*2 + 2;
         }
 
         return highestpriority;
@@ -105,9 +109,10 @@ class maxheap{
     //prints the heap that is used to implement our priority queue
     void printH()
     {
+        std::cout<<std::endl;
         for(i = 0; H[i]!= 0 ; i++)
         {
-            std::cout<<H[i]<<" ";
+            std::cout<<(H[i]).totalcost<<" ";
         }
     }
 
@@ -210,30 +215,30 @@ class maxheap{
 
     
 
-int main()
-{
-    //maxheap<int> priorityqueue;
-    // priorityqueue.insert(5);
-    // priorityqueue.insert(23);
-    // priorityqueue.insert(1);
-    // priorityqueue.insert(15);
-    // priorityqueue.insert(16);
-    // priorityqueue.insert(3);
+// int main()
+// {
+//     maxheap<int> priorityqueue;
+//     priorityqueue.insert(5);
+//     priorityqueue.insert(23);
+//     priorityqueue.insert(1);
+//     priorityqueue.insert(15);
+//     priorityqueue.insert(16);
+//     priorityqueue.insert(3);
     
-    // priorityqueue.printH();
+//     priorityqueue.printH();
 
-    // std::cout<<std::endl;
+//     std::cout<<std::endl;
 
-    // std::cout<<"pull 1: "<<priorityqueue.pull()<<std::endl;
-    // std::cout<<"pull 2: "<<priorityqueue.pull()<<std::endl;
-    // std::cout<<"pull 3: "<<priorityqueue.pull()<<std::endl;
-    // std::cout<<"pull 4: "<<priorityqueue.pull()<<std::endl;
-    // std::cout<<"pull 5: "<<priorityqueue.pull()<<std::endl;
-    // std::cout<<"pull 6: "<<priorityqueue.pull()<<std::endl;
+//     std::cout<<"pull 1: "<<priorityqueue.pull()<<std::endl;
+//     std::cout<<"pull 2: "<<priorityqueue.pull()<<std::endl;
+//     std::cout<<"pull 3: "<<priorityqueue.pull()<<std::endl;
+//     std::cout<<"pull 4: "<<priorityqueue.pull()<<std::endl;
+//     std::cout<<"pull 5: "<<priorityqueue.pull()<<std::endl;
+//     std::cout<<"pull 6: "<<priorityqueue.pull()<<std::endl;
 
-    int nums[7] = {10, 6, 7, 5, 15, 17, 12};
+//     int nums[7] = {10, 6, 7, 5, 15, 17, 12};
 
-    maxheap<int> heap;
-    heap.heapsort(nums, 7);
+//     maxheap<int> heap;
+//     heap.heapsort(nums, 7);
 
-}
+// }
